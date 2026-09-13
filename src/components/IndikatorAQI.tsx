@@ -1,6 +1,6 @@
 // src/components/IndikatorAQI.tsx
 import { View, Text } from "react-native";
-import { LaporanCuaca } from "../types/cuaca"; // 1. Ubah ke LaporanCuaca
+import { LaporanCuaca } from "../types/cuaca"; // Ubah ke LaporanCuaca
 
 export default function IndikatorAQI({
   kota,
@@ -8,17 +8,17 @@ export default function IndikatorAQI({
   tingkat,
   diperbaruiPada,
 }: LaporanCuaca) {
-  // 2. Sesuaikan string case dengan yang ada di cuaca.ts
+  // Sesuaikan string case dengan yang ada di cuaca.ts
   const getWarna = () => {
     switch (tingkat) {
       case "Baik":
-        return "#4CAF50"; // Hijau
+        return "#4CAF50"; 
       case "Sedang":
-        return "#FFC107"; // Kuning
+        return "#FFC107"; 
       case "Tidak_Sehat":
-        return "#FF9800"; // Oranye
+        return "#FF9800"; 
       case "Berbahaya":
-        return "#F44336"; // Merah
+        return "#F44336"; 
       default:
         return "#777";
     }

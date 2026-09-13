@@ -25,7 +25,7 @@ export default function HalamanUtama() {
       <SearchBox onCari={handleCari} />
       <WeatherCard kota={kotaAktif} suhu={30} tingkatAQI="Baik" />
 
-      // Latihan Mandiri - Pertemuan 2
+      {/* Latihan Mandiri - Pertemuan 2 */}
       <IndikatorAQI 
         kota={kotaAktif} 
         indeksAQI={50} 
