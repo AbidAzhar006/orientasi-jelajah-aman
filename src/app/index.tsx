@@ -20,7 +20,7 @@ export default function HalamanUtama() {
   }
 
   return (
-    <View style={{ padding: 16, gap: 16 }}>
+    <View style={{ padding: 16, gap: 16, marginTop: 80}}>
       <SearchBox onCari={handleCari} />
       <WeatherCard kota={kotaAktif} suhu={30} tingkatAQI="Baik" />
       <RiwayatList daftarKota={riwayat} />
