@@ -12,3 +12,11 @@ export interface WeatherCardProps{
     suhu: number;
     tingkatAQI: TingkatAQI;
 }
+
+// Latihan Mandiri - Pertemuan 2
+export interface LaporanCuaca {
+    kota: string;
+    indeksAQI: number;
+    tingkat: "Baik" | "Sedang" | "Tidak_Sehat" | "Berbahaya";
+    diperbaruiPada?: string;
+}
