@@ -30,7 +30,7 @@ export default function HalamanUtama() {
         kota={kotaAktif} 
         indeksAQI={50} 
         tingkat="Baik" 
-        diperbaruiPada="2023-10-01 10:00:00"
+        diperbaruiPada="2026-09-13 00:00:00"
       />
       
       <RiwayatList daftarKota={riwayat} />
