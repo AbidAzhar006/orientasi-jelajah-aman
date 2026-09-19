@@ -1,9 +1,9 @@
 import { View } from 'react-native';
 import { useState, useEffect } from 'react';
-import WeatherCard from '../components/WeatherCard';
-import SearchBox from '../components/SearchBox';
-import RiwayatList from '../components/RiwayatList';
-import IndikatorAQI from "../components/IndikatorAQI"; // Latihan Mandiri - Pertemuan 2
+import WeatherCard from '../../components/WeatherCard';
+import SearchBox from '../../components/SearchBox';
+import RiwayatList from '../../components/RiwayatList';
+import IndikatorAQI from "../../components/IndikatorAQI"; // Latihan Mandiri - Pertemuan 2
 
 export default function HalamanUtama() {
   const [kotaAktif, setKotaAktif] = useState("Pekalongan");
