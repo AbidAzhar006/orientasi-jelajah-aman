@@ -24,7 +24,11 @@ export default function SearchBox({ onCari }: SearchBoxProps) {
                     backgroundColor: "#fff",
                 }}
             />
-            <Button title="Cari" onPress={() => onCari(kota)} />
+            <Button
+                title="Cari"
+                onPress={() => onCari(kota)}
+                accessibilityLabel="Cari cuaca untuk kota yang dimasukkan"
+            />
         </View>
     )
 }
