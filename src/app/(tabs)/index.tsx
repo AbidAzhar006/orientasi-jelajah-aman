@@ -14,7 +14,8 @@ export default function HalamanUtama() {
   const [sedangMemuat, setSedangMemuat] = useState(false);
   const [pesanError, setPesanError] = useState<string | null>(null);
 
-  const teksTertunda = useDebounce(teksCari, 500);
+  // 1. Ubah delay debounce menjadi 800 ms
+  const teksTertunda = useDebounce(teksCari, 800);
 
   useEffect(() => {
     if (teksTertunda.trim().length === 0) {
@@ -44,15 +45,26 @@ export default function HalamanUtama() {
 
       {sedangMemuat && <ActivityIndicator />}
 
+      {/* 2. Tambahkan accessibilityLabel pada pesan error */}
       {pesanError && (
         <View>
-          <Text>{pesanError}</Text>
+          <Text accessibilityLabel={`Pesan galat: ${pesanError}`}>{pesanError}</Text>
           <Button title="Coba Lagi" onPress={() => ambilData(teksTertunda)} />
         </View>
       )}
 
+      {/* 3. Tambahkan accessibilityLabel pada kondisi kosong */}
       {!sedangMemuat && !pesanError && teksTertunda.length > 0 && hasil.length === 0 && (
-        <Text>Kota tidak ditemukan</Text>
+        <Text accessibilityLabel="Pencarian selesai, kota tidak ditemukan">
+          Kota tidak ditemukan
+        </Text>
+      )}
+
+      {/* 4. Tampilkan indikator jumlah hasil pencarian */}
+      {!sedangMemuat && !pesanError && hasil.length > 0 && (
+        <Text style={{ fontWeight: "bold" }}>
+          Ditemukan {hasil.length} kota
+        </Text>
       )}
 
       {hasil.map((kota) => (
