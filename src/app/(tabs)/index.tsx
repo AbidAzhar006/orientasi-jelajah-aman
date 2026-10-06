@@ -21,6 +21,7 @@ import { konversiTingkatAQI } from "../../services/weatherAdapter";
 import { labelKodeCuaca } from "../../constants/weatherCodes";
 import { HasilGeocoding } from "../../types/geocoding";
 import { DataCuacaLengkap, DataKualitasUdara } from "../../types/weather";
+import { mintaIzinLokasi, ambilKoordinatSaatIni } from "../../services/locationService"; //
 
 export default function HalamanUtama() {
   const [teksCari, setTeksCari] = useState("");
@@ -31,6 +32,7 @@ export default function HalamanUtama() {
   const [sedangMemuatCuaca, setSedangMemuatCuaca] = useState(false);
   const [sedangMencariKota, setSedangMencariKota] = useState(false);
   const [pesanError, setPesanError] = useState<string | null>(null);
+  const [pesanLokasi, setPesanLokasi] = useState<string | null>(null); //
 
   const teksTertunda = useDebounce(teksCari, 800);
   const requestIdRef = useRef(0); // Mencegah race condition
@@ -85,11 +87,37 @@ export default function HalamanUtama() {
     }
   }
 
+  // Fungsi tambahan untuk Tahap 3
+  async function gunakanLokasiSaatIni() {
+    const status = await mintaIzinLokasi();
+    if (status === "denied") {
+      setPesanLokasi("Izin lokasi ditolak. Silakan cari kota secara manual di atas.");
+      return;
+    }
+    if (status === "unavailable") {
+      setPesanLokasi("Layanan lokasi tidak aktif di perangkat ini. Silakan cari kota secara manual.");
+      return;
+    }
+    setPesanLokasi(null);
+    const koordinat = await ambilKoordinatSaatIni();
+    pilihKota({
+      id: -1,
+      name: "Lokasi Saat Ini",
+      latitude: koordinat.latitude,
+      longitude: koordinat.longitude,
+      country: "",
+    });
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
       <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
         {/* Kolom Pencarian */}
         <SearchBox onCari={setTeksCari} />
+
+        {/* Tombol & Pesan Lokasi Saat Ini (Tahap 3) */}
+        <Button title="Gunakan Lokasi Saat Ini" onPress={gunakanLokasiSaatIni} />
+        {pesanLokasi && <Text>{pesanLokasi}</Text>}
 
         {/* Indikator Memuat Pencarian Kota */}
         {sedangMencariKota && <ActivityIndicator color="#0284C7" />}
@@ -178,7 +206,6 @@ export default function HalamanUtama() {
                         {kota.admin1}, {kota.country}
                       </Text>
                     )}
-                    
                   </View>
                   <Text style={{ color: "#0284C7", fontWeight: "600", fontSize: 13 }}>
                     {aktif ? "Terpilih ✓" : "Lihat →"}
@@ -209,7 +236,6 @@ export default function HalamanUtama() {
               indeksAQI={kualitasUdara.indeksAQI}
             />
 
-            {/* 1. Tambahan Suhu Maksimal & Minimal Harian (Hari Ini) */}
             <View
               style={{
                 padding: 10,
@@ -219,7 +245,7 @@ export default function HalamanUtama() {
               }}
             >
               <Text style={{ fontSize: 13, color: "#475569" }}>
-                Suhu Hari Ini — Maks:{" "}
+                Suhu Hari Ini - Maks:{" "}
                 <Text style={{ fontWeight: "600", color: "#1E293B" }}>
                   {cuaca.harian.suhuMaksimal[0]}°C
                 </Text>{" "}
@@ -239,7 +265,7 @@ export default function HalamanUtama() {
               }}
             >
               <Text style={{ fontSize: 13, color: "#475569" }}>
-                Kondisi:{" "}
+                Kondisi:{" "} 
                 <Text style={{ fontWeight: "600", color: "#1E293B" }}>
                   {labelKodeCuaca(cuaca.saatIni.kodeCuaca)}
                 </Text>{" "}
@@ -252,7 +278,6 @@ export default function HalamanUtama() {
           </View>
         )}
 
-        {/* 2. Tambahan Info PM2.5 dan PM10 di dekat AtribusiCuaca */}
         <View style={{ marginTop: 16, alignItems: "center", gap: 4 }}>
           {kualitasUdara && (
             <Text style={{ fontSize: 11, color: "#64748B" }}>
