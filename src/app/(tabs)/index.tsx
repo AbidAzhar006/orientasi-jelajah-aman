@@ -10,6 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router"; // Ditambahkan untuk Tahap 6
 import SearchBox from "../../components/SearchBox";
 import WeatherCard from "../../components/WeatherCard";
 import AtribusiCuaca from "../../components/AtribusiCuaca";
@@ -21,7 +22,7 @@ import { konversiTingkatAQI } from "../../services/weatherAdapter";
 import { labelKodeCuaca } from "../../constants/weatherCodes";
 import { HasilGeocoding } from "../../types/geocoding";
 import { DataCuacaLengkap, DataKualitasUdara } from "../../types/weather";
-import { mintaIzinLokasi, ambilKoordinatSaatIni } from "../../services/locationService"; //
+import { mintaIzinLokasi, ambilKoordinatSaatIni } from "../../services/locationService";
 
 export default function HalamanUtama() {
   const [teksCari, setTeksCari] = useState("");
@@ -32,7 +33,7 @@ export default function HalamanUtama() {
   const [sedangMemuatCuaca, setSedangMemuatCuaca] = useState(false);
   const [sedangMencariKota, setSedangMencariKota] = useState(false);
   const [pesanError, setPesanError] = useState<string | null>(null);
-  const [pesanLokasi, setPesanLokasi] = useState<string | null>(null); //
+  const [pesanLokasi, setPesanLokasi] = useState<string | null>(null);
 
   const teksTertunda = useDebounce(teksCari, 800);
   const requestIdRef = useRef(0); // Mencegah race condition
@@ -226,7 +227,7 @@ export default function HalamanUtama() {
           </View>
         )}
 
-        {/* Kartu Cuaca & Info Detail Kota Terpilih */}
+        {/* Kartu Cuaca & Info Detail Kota Terpilih (Termasuk Tombol Favorit) */}
         {cuaca && kualitasUdara && kotaTerpilih && !sedangMemuatCuaca && (
           <View style={{ gap: 10 }}>
             <WeatherCard
@@ -234,6 +235,22 @@ export default function HalamanUtama() {
               suhu={cuaca.saatIni.suhu}
               tingkatAQI={konversiTingkatAQI(kualitasUdara.indeksAQI)}
               indeksAQI={kualitasUdara.indeksAQI}
+            />
+
+            {/* Tombol Tambahkan ke Favorit (Tahap 6) */}
+            <Button
+              title="Tambahkan ke Favorit"
+              onPress={() =>
+                router.push({
+                  pathname: "/tambah-favorit",
+                  params: {
+                    id: String(kotaTerpilih.id),
+                    nama: kotaTerpilih.name,
+                    lat: String(kotaTerpilih.latitude),
+                    lon: String(kotaTerpilih.longitude),
+                  },
+                })
+              }
             />
 
             <View
