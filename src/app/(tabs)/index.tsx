@@ -178,6 +178,7 @@ export default function HalamanUtama() {
                         {kota.admin1}, {kota.country}
                       </Text>
                     )}
+                    
                   </View>
                   <Text style={{ color: "#0284C7", fontWeight: "600", fontSize: 13 }}>
                     {aktif ? "Terpilih ✓" : "Lihat →"}
