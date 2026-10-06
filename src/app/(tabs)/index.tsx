@@ -1,6 +1,6 @@
 // src/app/(tabs)/index.tsx
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react"; // Tahap 10: Tambah useCallback
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router"; // Ditambahkan untuk Tahap 6
+import { router, useFocusEffect } from "expo-router"; // Tahap 10: Tambah useFocusEffect
 import SearchBox from "../../components/SearchBox";
 import WeatherCard from "../../components/WeatherCard";
 import AtribusiCuaca from "../../components/AtribusiCuaca";
@@ -23,6 +23,7 @@ import { labelKodeCuaca } from "../../constants/weatherCodes";
 import { HasilGeocoding } from "../../types/geocoding";
 import { DataCuacaLengkap, DataKualitasUdara } from "../../types/weather";
 import { mintaIzinLokasi, ambilKoordinatSaatIni } from "../../services/locationService";
+import { ambilSemuaFavorit } from "../../services/favoritStorage"; // Tahap 10: Import ambilSemuaFavorit
 
 export default function HalamanUtama() {
   const [teksCari, setTeksCari] = useState("");
@@ -34,6 +35,9 @@ export default function HalamanUtama() {
   const [sedangMencariKota, setSedangMencariKota] = useState(false);
   const [pesanError, setPesanError] = useState<string | null>(null);
   const [pesanLokasi, setPesanLokasi] = useState<string | null>(null);
+  
+  // Tahap 10: Latihan Mandiri - State untuk mengecek apakah kota sudah ada di daftar favorit
+  const [sudahFavorit, setSudahFavorit] = useState(false);
 
   const teksTertunda = useDebounce(teksCari, 800);
   const requestIdRef = useRef(0); // Mencegah race condition
@@ -64,6 +68,18 @@ export default function HalamanUtama() {
     cariDataKota(teksTertunda);
   }, [teksTertunda]);
 
+  // Tahap 10: Latihan Mandiri - Cek status favorit setiap kali halaman utama difokuskan
+  useFocusEffect(
+    useCallback(() => {
+      if (kotaTerpilih) {
+        ambilSemuaFavorit().then((daftar) => {
+          const ada = daftar.some((k) => k.id === kotaTerpilih.id);
+          setSudahFavorit(ada);
+        });
+      }
+    }, [kotaTerpilih])
+  );
+
   async function pilihKota(kota: HasilGeocoding) {
     setKotaTerpilih(kota);
     const idSaatIni = ++requestIdRef.current;
@@ -71,15 +87,17 @@ export default function HalamanUtama() {
     setPesanError(null);
 
     try {
-      const [dataCuaca, dataAQI] = await Promise.all([
+      const [dataCuaca, dataAQI, daftarFav] = await Promise.all([
         ambilCuaca(kota.latitude, kota.longitude),
         ambilKualitasUdara(kota.latitude, kota.longitude),
+        ambilSemuaFavorit(), // Tahap 10: Ambil data favorit untuk pemeriksaan langsung
       ]);
 
       if (idSaatIni !== requestIdRef.current) return;
 
       setCuaca(dataCuaca);
       setKualitasUdara(dataAQI);
+      setSudahFavorit(daftarFav.some((k) => k.id === kota.id)); // Tahap 10: Set status duplikat
     } catch (err) {
       if (idSaatIni !== requestIdRef.current) return;
       setPesanError("Gagal memuat data cuaca. Periksa koneksi internet Anda.");
@@ -237,21 +255,36 @@ export default function HalamanUtama() {
               indeksAQI={kualitasUdara.indeksAQI}
             />
 
-            {/* Tombol Tambahkan ke Favorit (Tahap 6) */}
-            <Button
-              title="Tambahkan ke Favorit"
-              onPress={() =>
-                router.push({
-                  pathname: "/tambah-favorit",
-                  params: {
-                    id: String(kotaTerpilih.id),
-                    nama: kotaTerpilih.name,
-                    lat: String(kotaTerpilih.latitude),
-                    lon: String(kotaTerpilih.longitude),
-                  },
-                })
-              }
-            />
+            {/* Tahap 10: Latihan Mandiri - Nonaktifkan / sembunyikan tombol jika sudah favorit */}
+            {!sudahFavorit ? (
+              <Button
+                title="Tambahkan ke Favorit"
+                onPress={() =>
+                  router.push({
+                    pathname: "/tambah-favorit",
+                    params: {
+                      id: String(kotaTerpilih.id),
+                      nama: kotaTerpilih.name,
+                      lat: String(kotaTerpilih.latitude),
+                      lon: String(kotaTerpilih.longitude),
+                    },
+                  })
+                }
+              />
+            ) : (
+              <View
+                style={{
+                  padding: 10,
+                  backgroundColor: "#DCFCE7",
+                  borderRadius: 8,
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ color: "#166534", fontWeight: "600", fontSize: 13 }}>
+                  ✓ Kota ini sudah ada di daftar favorit
+                </Text>
+              </View>
+            )}
 
             <View
               style={{
