@@ -1,6 +1,6 @@
 // src/app/(tabs)/riwayat.tsx
 import { useState, useCallback } from "react";
-import { View, Text, Button, Alert } from "react-native"; // Tahap 10: Import Alert
+import { View, Text, Button, Alert, Platform } from "react-native"; // Tahap 10: Tambah Platform
 import { useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ambilSemuaFavorit, hapusFavorit } from "../../services/favoritStorage";
@@ -15,8 +15,23 @@ export default function TabRiwayat() {
     }, [])
   );
 
-  // Tahap 10: Latihan Mandiri - Tambah konfirmasi hapus dengan Alert.alert
-  async function hapus(id: number, nama: string) {
+  // Tahap 10: Latihan Mandiri - Eksekusi hapus data
+  async function eksekusiHapus(id: number) {
+    await hapusFavorit(id);
+    // Pastikan filter membandingkan Number agar kebal beda tipe data
+    setDaftarFavorit((prev) => prev.filter((k) => Number(k.id) !== Number(id)));
+  }
+
+  // Tahap 10: Latihan Mandiri - Konfirmasi hapus (kompatibel Web & Mobile)
+  function hapus(id: number, nama: string) {
+    if (Platform.OS === "web") {
+      const setuju = window.confirm(`Yakin hapus ${nama}?`);
+      if (setuju) {
+        eksekusiHapus(id);
+      }
+      return;
+    }
+
     Alert.alert(
       "Konfirmasi Hapus",
       `Yakin hapus ${nama}?`,
@@ -25,10 +40,7 @@ export default function TabRiwayat() {
         {
           text: "Hapus",
           style: "destructive",
-          onPress: async () => {
-            await hapusFavorit(id);
-            setDaftarFavorit((prev) => prev.filter((k) => k.id !== id));
-          },
+          onPress: () => eksekusiHapus(id),
         },
       ]
     );
@@ -54,7 +66,7 @@ export default function TabRiwayat() {
           }}
         >
           <Text>{kota.nama}</Text>
-          {/* Tahap 10: Kirim nama kota ke fungsi hapus untuk konfirmasi */}
+          {/* Tahap 10: Kirim id dan nama kota */}
           <Button title="Hapus" onPress={() => hapus(kota.id, kota.nama)} />
         </View>
       ))}
