@@ -8,7 +8,7 @@ export default function HalamanDetail() {
 
   return (
     <View style={{ padding: 16, gap: 16 }}>
-      <WeatherCard kota={kota} suhu={29} tingkatAQI="Baik" />
+      <WeatherCard kota={kota} suhu={29} tingkatAQI="Baik" indeksAQI={25} />
       <Button
         title="Tambahkan ke Favorit"
         onPress={() => router.push("/tambah-favorit")}

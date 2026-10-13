@@ -1,4 +1,5 @@
-export interface DataCuaca{
+// src/types/cuaca.ts
+export interface DataCuaca {
     kota: string;
     suhu: number;
     kelembapan: number;
@@ -7,11 +8,11 @@ export interface DataCuaca{
 
 export type TingkatAQI = 'Baik' | 'Sedang' | 'Tidak Sehat' | 'Berbahaya';
 
-export interface WeatherCardProps{
+export interface WeatherCardProps {
     kota: string;
     suhu: number;
     tingkatAQI: TingkatAQI;
-    indeksAQI: number; // baru: angka asli dari API
+    indeksAQI?: number; // Diubah opsional agar tidak error jika tidak dipanggil
 }
 
 // Latihan Mandiri - Pertemuan 2
