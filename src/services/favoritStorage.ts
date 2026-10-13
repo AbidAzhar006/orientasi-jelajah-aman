@@ -11,7 +11,8 @@ export async function ambilSemuaFavorit(): Promise<KotaFavorit[]> {
 
 export async function tambahFavorit(kota: KotaFavorit): Promise<void> {
   const daftar = await ambilSemuaFavorit();
-  const sudahAda = daftar.some((k) => k.id === kota.id);
+  // Gunakan Number() untuk memastikan kecocokan tipe data id
+  const sudahAda = daftar.some((k) => Number(k.id) === Number(kota.id));
   if (sudahAda) return;
 
   const daftarBaru = [...daftar, kota];
@@ -20,6 +21,7 @@ export async function tambahFavorit(kota: KotaFavorit): Promise<void> {
 
 export async function hapusFavorit(id: number): Promise<void> {
   const daftar = await ambilSemuaFavorit();
-  const daftarBaru = daftar.filter((k) => k.id !== id);
+  // Gunakan Number() agar proses filter kebal terhadap perbedaan tipe data
+  const daftarBaru = daftar.filter((k) => Number(k.id) !== Number(id));
   await AsyncStorage.setItem(KUNCI_PENYIMPANAN, JSON.stringify(daftarBaru));
 }
