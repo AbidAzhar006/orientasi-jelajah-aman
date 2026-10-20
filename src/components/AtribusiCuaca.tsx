@@ -1,13 +1,13 @@
 // src/components/AtribusiCuaca.tsx
-
-import { Text, TouchableOpacity, Linking } from "react-native";
+import { Text } from "react-native";
+import { useTheme } from "../hooks/use-theme";
 
 export default function AtribusiCuaca() {
+  const colors = useTheme();
+
   return (
-    <TouchableOpacity onPress={() => Linking.openURL("https://open-meteo.com/")}>
-      <Text style={{ fontSize: 11, color: "#888", textAlign: "center" }}>
-        Data cuaca disediakan oleh Open-Meteo.com
-      </Text>
-    </TouchableOpacity>
+    <Text style={{ fontSize: 11, color: colors.textSecondary }}>
+      Sumber data cuaca & kualitas udara: Open-Meteo.com
+    </Text>
   );
 }

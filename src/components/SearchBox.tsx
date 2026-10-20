@@ -1,33 +1,37 @@
 // src/components/SearchBox.tsx
 import { useState } from "react";
 import { View, TextInput } from "react-native";
+import { useTheme } from "../hooks/use-theme";
 
 interface SearchBoxProps {
-  onCari: (teks: string) => void;
+  onCari: (kataKunci: string) => void;
 }
 
 export default function SearchBox({ onCari }: SearchBoxProps) {
   const [teks, setTeks] = useState("");
+  const colors = useTheme();
 
-  function handleChange(nilaiBaru: string) {
-    setTeks(nilaiBaru);
-    onCari(nilaiBaru); // kirim setiap perubahan, debounce diatur di pemanggilnya
+  function ubahTeks(nilai: string) {
+    setTeks(nilai);
+    onCari(nilai);
   }
 
   return (
     <View>
       <TextInput
-        placeholder="Cari nama kota..."
         value={teks}
-        onChangeText={handleChange}
-        accessibilityLabel="Cari cuaca untuk kota yang dimasukkan"
+        onChangeText={ubahTeks}
+        placeholder="Cari nama kota..."
+        placeholderTextColor={colors.textSecondary}
+        accessibilityLabel="Kolom pencarian kota"
         style={{
           borderWidth: 1,
-          borderColor: "#ccc",
+          borderColor: colors.textSecondary,
           borderRadius: 8,
           paddingHorizontal: 12,
           paddingVertical: 8,
-          backgroundColor: "#fff",
+          backgroundColor: colors.backgroundElement,
+          color: colors.text,
         }}
       />
     </View>

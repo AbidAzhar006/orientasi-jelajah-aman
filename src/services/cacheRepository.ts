@@ -71,7 +71,7 @@ export async function daftarKotaTersimpan(): Promise<RingkasanKotaTersimpan[]> {
   const db = await ambilDatabase();
   const semua = await db.getAllAsync<BarisRingkasan>(
     `SELECT kunci, kota_id, nama_kota, latitude, longitude, disimpan_pada
-    FROM cache_cuaca ORDER BY disimpan_pada DESC LIMIT 5`
+    FROM cache_cuaca ORDER BY disimpan_pada DESC LIMIT 10`
   );
 
   return semua.map((b) => ({
@@ -82,6 +82,12 @@ export async function daftarKotaTersimpan(): Promise<RingkasanKotaTersimpan[]> {
     longitude: b.longitude,
     disimpanPada: b.disimpan_pada,
   }));
+}
+
+// FITUR 3 UTS: Hapus cache satu kota spesifik berdasarkan kunci koordinat
+export async function hapusCacheByKunci(kunci: string): Promise<void> {
+  const db = await ambilDatabase();
+  await db.runAsync("DELETE FROM cache_cuaca WHERE kunci = ?", [kunci]);
 }
 
 // Invalidation otomatis: buang cache yang lebih tua dari batas umur

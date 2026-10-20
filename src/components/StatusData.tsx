@@ -1,47 +1,45 @@
 // src/components/StatusData.tsx
 import { View, Text } from "react-native";
 import { SumberData } from "../types/cache";
+import { useTheme } from "../hooks/use-theme";
 
 interface StatusDataProps {
   sumber: SumberData;
   disimpanPada: number;
 }
 
-function formatUmur(disimpanPada: number): string {
-  const menit = Math.floor((Date.now() - disimpanPada) / 60000);
-  if (menit < 1) return "baru saja";
-  if (menit < 60) return menit + " menit lalu";
-  const jam = Math.floor(menit / 60);
-  if (jam < 24) return jam + " jam lalu";
-  return Math.floor(jam / 24) + " hari lalu";
-}
-
-function labelSumber(sumber: SumberData): string {
-  if (sumber === "jaringan") return "Data terbaru dari internet";
-  if (sumber === "cache-segar") return "Data tersimpan (masih segar)";
-  return "Mode offline - data tersimpan mungkin sudah usang";
-}
-
 export default function StatusData({ sumber, disimpanPada }: StatusDataProps) {
-  const basi = sumber === "cache-basi";
-  const label = labelSumber(sumber);
-  const umur = formatUmur(disimpanPada);
+  const colors = useTheme();
+  const waktu = new Date(disimpanPada).toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const basi = sumber === "cache-basi"; // ← DIPERBAIKI: dulu "cache_basi" (underscore)
+  const labelSumber =
+    sumber === "jaringan"
+      ? "Data langsung dari internet"
+      : basi
+      ? "Data tersimpan (offline / perlu diperbarui)"
+      : "Data tersimpan di perangkat";
 
   return (
     <View
-      accessible
-      accessibilityLabel={label + ", diperbarui " + umur}
+      accessible={true}
+      accessibilityLabel={`${labelSumber}, diperbarui pukul ${waktu}`}
       style={{
-        padding: 8,
+        padding: 10,
         borderRadius: 8,
-        backgroundColor: basi ? "#FEF3E2" : "#EAFBF6",
+        backgroundColor: colors.backgroundSelected,
+        borderWidth: 1,
+        borderColor: basi ? "#F59E0B" : "#10B981",
       }}
     >
-      <Text style={{ fontSize: 12, color: basi ? "#B45309" : "#21875F" }}>
-        {label}
+      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.text }}>
+        {labelSumber}
       </Text>
-      <Text style={{ fontSize: 11, color: "#666666" }}>
-        Diperbarui {umur}
+      <Text style={{ fontSize: 11, color: colors.textSecondary }}>
+        Diperbarui: {waktu}
       </Text>
     </View>
   );
